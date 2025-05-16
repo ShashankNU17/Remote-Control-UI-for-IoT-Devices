@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Light Control</title>
+    <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f0f0f0;
+      padding-top: 30px;
+    }
+    .btn {
+      width: 150px;
+      height: 50px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .yellow { background-color: #fff176; }
+    .orange { background-color: #ffb74d; }
+    .blue { background-color: #81d4fa; }
+    .code-section {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .back {
+      margin-top: 30px;
+      display: inline-block;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+
+  </style>
+  </head>
+  <body>
+
+    <h2>Light Control Panel</h2>
+
+    <div>
+      <button class="btn yellow" onclick="sendCmd('on')">Light ON</button>
+      <button class="btn orange" onclick="sendCmd('off')">Light OFF</button><br>
+      <button class="btn blue" onclick="sendCmd('dim')">Dim</button>
+      <button class="btn blue" onclick="sendCmd('brighten')">Brighten</button>
+    </div>
+
+    <br>
+    <button onclick="toggleCode()" class="btn">Show Code</button>
+
+    <button onclick="toggleComponents()" class="btn">Show Components</button>
+
+    <div id="componentsBox" class="code-section">
+      <h3>🧰 Components Required</h3>
+      <table border="1"
+        style="margin: 0 auto; border-collapse: collapse; width: 90%;">
+
+        <thead>
+          <tr style="background-color: #d3d3d3;">
+            <th>#</th>
+            <th>Component</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>ESP32 Dev Board</td>
+            <td>Main microcontroller with built-in Wi-Fi to host the Light
+              Control interface.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Relay Module (1/2/4 Channel)</td>
+            <td>Used to switch high-voltage AC lights using ESP32 control
+              signals.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>AC/DC Light Bulb</td>
+            <td>The actual load to be controlled (LED, incandescent, etc.).</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Power Supply</td>
+            <td>5V USB or battery power for ESP32; AC mains (with proper
+              precautions) for the light.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Breadboard and Jumper Wires</td>
+            <td>For prototyping connections between ESP32 and the relay
+              module.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>LED & Resistor (Optional)</td>
+            <td>Can be used for safe testing before using a real light
+              bulb.</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div id="codeBox" class="code-section">
+        <h3>ESP32 Light Control Code</h3>
+        <pre><code>
+// ESP32 + AsyncWebServer Light Control Sketch
+
+#include &lt;WiFi.h&gt;
+#include &lt;ESPAsyncWebServer.h&gt;
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+AsyncWebServer server(80);
+
+const char* htmlPage = R"rawliteral(
+&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;Light Control&lt;/title&gt;
+&lt;style&gt;
+  .btn { width: 150px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+  .yellow { background-color: #fff176; }
+  .orange { background-color: #ffb74d; }
+  .blue { background-color: #81d4fa; }
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+&lt;h2&gt;Light Control Panel&lt;/h2&gt;
+&lt;button class='btn yellow' onclick="sendCmd('on')"&gt;Light ON&lt;/button&gt;
+&lt;button class='btn orange' onclick="sendCmd('off')"&gt;Light OFF&lt;/button&gt;&lt;br&gt;
+&lt;button class='btn blue' onclick="sendCmd('dim')"&gt;Dim&lt;/button&gt;
+&lt;button class='btn blue' onclick="sendCmd('brighten')"&gt;Brighten&lt;/button&gt;
+&lt;script&gt;
+function sendCmd(cmd) {
+  fetch('/light?cmd=' + cmd);
+}
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting...");
+  }
+  Serial.println("Connected!");
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", htmlPage);
+  });
+
+  server.on("/light", HTTP_GET, [](AsyncWebServerRequest *request){
+    if (request->hasParam("cmd")) {
+      String cmd = request->getParam("cmd")->value();
+      Serial.println("Light Command: " + cmd);
+      // Handle light command here (e.g., digitalWrite or PWM)
+    }
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.begin();
+}
+
+void loop() {}
+    </code></pre>
+      </div>
+
+      <div class="back">
+        <a href="index.html"
+          style="text-decoration: none; font-weight: bold;">⬅️ Back to Home</a>
+      </div>
+
+      <script>
+    function toggleCode() {
+      const codeBox = document.getElementById("codeBox");
+      codeBox.style.display = codeBox.style.display === "block" ? "none" : "block";
+    }
+    function sendCmd(cmd) {
+      fetch('/light?cmd=' + cmd);
+    }
+    function toggleComponents() {
+      const componentsBox = document.getElementById("componentsBox");
+      componentsBox.style.display = componentsBox.style.display === "block" ? "none" : "block";
+    }
+  </script>
+
+    </body>
+  </html>

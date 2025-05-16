@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Water Level Monitor</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #e1f5fe; padding-top: 30px; }
+    .btn { width: 170px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+    .blue { background-color: #4fc3f7; }
+    .green { background-color: #a5d6a7; }
+    .red { background-color: #ef9a9a; }
+    .code-section { display: none; background: #fff; padding: 20px; margin-top: 20px; border: 1px solid #ccc; text-align: left; }
+    pre { background: #eee; padding: 10px; overflow-x: auto; white-space: pre-wrap; }
+    .back { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <h2>Water Level Monitor</h2>
+  <button class="btn blue">Read Level</button>
+  <button class="btn green">Start Pump</button>
+  <button class="btn red">Stop Pump</button>
+
+  <br><br>
+  <button onclick="toggleCode()" class="btn">Show Code</button>
+
+  <div id="codeBox" class="code-section">
+    <h3>ESP32 Template + HTML Code</h3>
+    <pre><code>
+// 🚀 ESP32 + AsyncWebServer Boilerplate
+
+#include &lt;WiFi.h&gt;
+#include &lt;ESPAsyncWebServer.h&gt;
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+AsyncWebServer server(80);
+
+// Sample HTML UI (Water Level + Pump Control)
+const char* htmlPage = R"rawliteral(
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;&lt;head&gt;&lt;title&gt;Water Monitor&lt;/title&gt;
+&lt;style&gt;
+  .btn { width: 170px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+  .blue { background-color: #4fc3f7; }
+  .green { background-color: #a5d6a7; }
+  .red { background-color: #ef9a9a; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h2&gt;Water Level Monitor&lt;/h2&gt;
+  &lt;button class='btn blue' onclick="sendCmd('read')"&gt;Read Level&lt;/button&gt;
+  &lt;button class='btn green' onclick="sendCmd('start')"&gt;Start Pump&lt;/button&gt;
+  &lt;button class='btn red' onclick="sendCmd('stop')"&gt;Stop Pump&lt;/button&gt;
+  &lt;script&gt;
+    function sendCmd(cmd) {
+      fetch('/control?cmd=' + cmd);
+    }
+  &lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) { delay(1000); Serial.println("Connecting..."); }
+  Serial.println("Connected!");
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request-&gt;send_P(200, "text/html", htmlPage);
+  });
+
+  server.on("/control", HTTP_GET, [](AsyncWebServerRequest *request){
+    if (request-&gt;hasParam("cmd")) {
+      String cmd = request-&gt;getParam("cmd")-&gt;value();
+      if (cmd == "read") {
+        // TODO: Read water level sensor
+      } else if (cmd == "start") {
+        // TODO: Turn ON pump
+      } else if (cmd == "stop") {
+        // TODO: Turn OFF pump
+      }
+    }
+    request-&gt;send(200, "text/plain", "OK");
+  });
+
+  server.begin();
+}
+
+void loop() {}
+    </code></pre>
+  </div>
+
+  <div class="back">
+    <a href="index.html"><strong>⬅️ Back to Home</strong></a>
+  </div>
+
+  <script>
+    function toggleCode() {
+      const codeBox = document.getElementById("codeBox");
+      codeBox.style.display = codeBox.style.display === "block" ? "none" : "block";
+    }
+  </script>
+
+</body>
+</html>

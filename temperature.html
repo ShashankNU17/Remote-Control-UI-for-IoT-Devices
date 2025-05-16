@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temperature Monitor</title>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 30px; background: #fff8e1; }
+    .btn {
+      width: 180px;
+      height: 50px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .orange { background-color: #ffcc80; }
+    .blue { background-color: #81d4fa; }
+    .code-section {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .back { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <h2>Temperature Monitor</h2>
+
+  <button class="btn orange" onclick="sendCmd('read')">Read Temperature</button>
+  <button class="btn blue" onclick="sendCmd('threshold')">Set Threshold</button>
+  <button class="btn blue" onclick="sendCmd('toggle_fan')">Toggle Fan</button>
+
+  <br><br>
+  <button onclick="toggleCode()" class="btn">Show Code</button>
+
+  <div id="codeBox" class="code-section">
+    <h3>ESP32 Temperature Monitor Code</h3>
+    <pre><code>
+// ESP32 + AsyncWebServer Temperature Monitor
+
+#include &lt;WiFi.h&gt;
+#include &lt;ESPAsyncWebServer.h&gt;
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+AsyncWebServer server(80);
+
+// Sample HTML page
+const char* htmlPage = R"rawliteral(
+&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;Temperature Monitor&lt;/title&gt;
+&lt;style&gt;
+  .btn {
+    width: 180px; height: 50px; margin: 10px;
+    font-size: 16px; border: none; border-radius: 8px; cursor: pointer;
+  }
+  .orange { background-color: #ffcc80; }
+  .blue { background-color: #81d4fa; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style='text-align:center;background:#fff8e1;'&gt;
+&lt;h2&gt;Temperature Monitor&lt;/h2&gt;
+&lt;button class='btn orange' onclick="sendCmd('read')"&gt;Read Temperature&lt;/button&gt;
+&lt;button class='btn blue' onclick="sendCmd('threshold')"&gt;Set Threshold&lt;/button&gt;
+&lt;button class='btn blue' onclick="sendCmd('toggle_fan')"&gt;Toggle Fan&lt;/button&gt;
+&lt;script&gt;
+function sendCmd(cmd) {
+  fetch('/temp?cmd=' + cmd);
+}
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting...");
+  }
+  Serial.println("Connected to WiFi");
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", htmlPage);
+  });
+
+  server.on("/temp", HTTP_GET, [](AsyncWebServerRequest *request){
+    if (request->hasParam("cmd")) {
+      String cmd = request->getParam("cmd")->value();
+      Serial.println("Received command: " + cmd);
+      // Handle temperature commands here
+    }
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.begin();
+}
+
+void loop() {}
+    </code></pre>
+  </div>
+
+  <div class="back">
+    <a href="index.html"><strong>⬅️ Back to Home</strong></a>
+  </div>
+
+  <script>
+    function toggleCode() {
+      const codeBox = document.getElementById("codeBox");
+      codeBox.style.display = codeBox.style.display === "block" ? "none" : "block";
+    }
+
+    function sendCmd(cmd) {
+      fetch('/temp?cmd=' + cmd);
+    }
+  </script>
+
+</body>
+</html>

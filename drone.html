@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Drone Control</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f0f0f0;
+      padding-top: 30px;
+    }
+    .btn {
+      width: 150px;
+      height: 50px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .green { background-color: #a5d6a7; }
+    .red { background-color: #ef9a9a; }
+    .blue { background-color: #90caf9; }
+    .yellow { background-color: #fff59d; }
+    .code-section {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .back {
+      margin-top: 30px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Drone Control Panel</h2>
+
+  <div>
+    <button class="btn green" onclick="sendCmd('takeoff')">Take Off</button><br>
+    <button class="btn blue" onclick="sendCmd('forward')">Forward</button>
+    <button class="btn yellow" onclick="sendCmd('hover')">Hover</button>
+    <button class="btn blue" onclick="sendCmd('rotate')">Rotate</button><br>
+    <button class="btn red" onclick="sendCmd('land')">Land</button>
+  </div>
+
+  <br>
+  <button onclick="toggleCode()" class="btn">Show Code</button>
+
+  <button onclick="toggleComponents()" class="btn">Show Components</button>
+
+<div id="componentsBox" class="code-section" style="display: none;">
+  <h3>📦 Components Required for Drone IoT Project</h3>
+  <table style="margin: 0 auto; border-collapse: collapse; width: 80%; background: #fff;">
+    <thead>
+      <tr style="background-color: #2196F3; color: white;">
+        <th style="padding: 10px; border: 1px solid #ccc;">Component</th>
+        <th style="padding: 10px; border: 1px solid #ccc;">Quantity</th>
+        <th style="padding: 10px; border: 1px solid #ccc;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">ESP32</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Wi-Fi enabled microcontroller</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Brushless DC Motors</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">4</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">For quadcopter propulsion</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">ESC (Electronic Speed Controllers)</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">4</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Motor control interface</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Li-Po Battery (11.1V)</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Main drone power supply</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Drone Frame</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Chassis for mounting components</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Propellers</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">4</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">2 CW + 2 CCW</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Jumper Wires</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">As needed</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Connections between modules</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+  <div id="codeBox" class="code-section">
+    <h3>ESP32 Drone Control Code</h3>
+    <pre><code>
+// ESP32 + AsyncWebServer Drone Command Sketch
+
+#include &lt;WiFi.h&gt;
+#include &lt;ESPAsyncWebServer.h&gt;
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+AsyncWebServer server(80);
+
+const char* htmlPage = R"rawliteral(
+&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;Drone Control&lt;/title&gt;
+&lt;style&gt;
+  .btn { width: 150px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+  .green { background-color: #a5d6a7; }
+  .red { background-color: #ef9a9a; }
+  .blue { background-color: #90caf9; }
+  .yellow { background-color: #fff59d; }
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+&lt;h2&gt;Drone Control Panel&lt;/h2&gt;
+&lt;button class='btn green' onclick="sendCmd('takeoff')"&gt;Take Off&lt;/button&gt;&lt;br&gt;
+&lt;button class='btn blue' onclick="sendCmd('forward')"&gt;Forward&lt;/button&gt;
+&lt;button class='btn yellow' onclick="sendCmd('hover')"&gt;Hover&lt;/button&gt;
+&lt;button class='btn blue' onclick="sendCmd('rotate')"&gt;Rotate&lt;/button&gt;&lt;br&gt;
+&lt;button class='btn red' onclick="sendCmd('land')"&gt;Land&lt;/button&gt;
+&lt;script&gt;
+function sendCmd(cmd) {
+  fetch('/drone?cmd=' + cmd);
+}
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected!");
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", htmlPage);
+  });
+
+  server.on("/drone", HTTP_GET, [](AsyncWebServerRequest *request){
+    if (request->hasParam("cmd")) {
+      String cmd = request->getParam("cmd")->value();
+      Serial.println("Drone Command: " + cmd);
+      // Handle drone command logic here
+    }
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.begin();
+}
+
+void loop() {}
+    </code></pre>
+  </div>
+
+  <div class="back">
+    <a href="index.html" style="text-decoration: none; font-weight: bold;">⬅️ Back to Home</a>
+  </div>
+
+  <script>
+    function toggleCode() {
+      const codeBox = document.getElementById("codeBox");
+      codeBox.style.display = codeBox.style.display === "block" ? "none" : "block";
+    }
+    function sendCmd(cmd) {
+      fetch('/drone?cmd=' + cmd);
+    }
+
+    function toggleComponents() {
+      const componentsBox = document.getElementById("componentsBox");
+      componentsBox.style.display = componentsBox.style.display === "block" ? "none" : "block";
+    }
+
+  </script>
+
+  
+
+</body>
+</html>

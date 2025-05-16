@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Control</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 30px; background: #f0f0f0; }
+    .btn { width: 120px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+    .blue { background-color: #b3e5fc; }
+    .red { background-color: #ef9a9a; }
+    .orange { background-color: #ffcc80; }
+    .code-section { display: none; background: #fff; padding: 20px; margin-top: 20px; border: 1px solid #ccc; text-align: left; }
+    pre { background: #eee; padding: 10px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h2>Car Control Panel</h2>
+
+  <div>
+    <button class="btn blue">Forward</button><br>
+    <button class="btn blue">Left</button>
+    <button class="btn red">Stop</button>
+    <button class="btn blue">Right</button><br>
+    <button class="btn blue">Backward</button><br><br>
+    <button class="btn orange">Light ON</button>
+    <button class="btn orange">Light OFF</button>
+  </div>
+
+  <br>
+  <button onclick="toggleCode()" class="btn">Show Code</button>
+
+  <button onclick="toggleComponents()" class="btn">Show Components</button>
+
+<div id="componentsBox" class="code-section" style="display: none;">
+  <h3>📦 Components Required for Car IoT Project</h3>
+  <table style="margin: 0 auto; border-collapse: collapse; width: 80%; background: #fff;">
+    <thead>
+      <tr style="background-color: #2196F3; color: white;">
+        <th style="padding: 10px; border: 1px solid #ccc;">Component</th>
+        <th style="padding: 10px; border: 1px solid #ccc;">Quantity</th>
+        <th style="padding: 10px; border: 1px solid #ccc;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">ESP32</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Wi-Fi enabled microcontroller</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">L298N Motor Driver</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Controls 2 DC motors</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">DC Motors</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">4</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">For 4-wheel movement</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Jumper Wires</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">As needed</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">For connections</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Battery Pack (6V–12V)</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">Powers the motors</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;">Breadboard (optional)</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">1</td>
+        <td style="padding: 10px; border: 1px solid #ccc;">For prototyping (optional)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function toggleComponents() {
+    const componentsBox = document.getElementById("componentsBox");
+    componentsBox.style.display = componentsBox.style.display === "block" ? "none" : "block";
+  }
+</script>
+
+
+  <div id="codeBox" class="code-section">
+    <h3>🚀 ESP32 Boilerplate Code for 4-Motor Control:</h3>
+    <pre><code>
+#include &lt;WiFi.h&gt;
+#include &lt;ESPAsyncWebServer.h&gt;
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+#define MOTOR1_1 5
+#define MOTOR1_2 18
+#define MOTOR2_1 19
+#define MOTOR2_2 21
+
+AsyncWebServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(MOTOR1_1, OUTPUT);
+  pinMode(MOTOR1_2, OUTPUT);
+  pinMode(MOTOR2_1, OUTPUT);
+  pinMode(MOTOR2_2, OUTPUT);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000); Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected");
+
+  server.on("/move", HTTP_GET, [](AsyncWebServerRequest *request){
+    String dir = request->getParam("dir")->value();
+    if (dir == "forward") {
+      digitalWrite(MOTOR1_1, HIGH); digitalWrite(MOTOR1_2, LOW);
+      digitalWrite(MOTOR2_1, HIGH); digitalWrite(MOTOR2_2, LOW);
+    } else if (dir == "backward") {
+      digitalWrite(MOTOR1_1, LOW); digitalWrite(MOTOR1_2, HIGH);
+      digitalWrite(MOTOR2_1, LOW); digitalWrite(MOTOR2_2, HIGH);
+    } else if (dir == "left") {
+      digitalWrite(MOTOR1_1, LOW); digitalWrite(MOTOR1_2, HIGH);
+      digitalWrite(MOTOR2_1, HIGH); digitalWrite(MOTOR2_2, LOW);
+    } else if (dir == "right") {
+      digitalWrite(MOTOR1_1, HIGH); digitalWrite(MOTOR1_2, LOW);
+      digitalWrite(MOTOR2_1, LOW); digitalWrite(MOTOR2_2, HIGH);
+    } else {
+      digitalWrite(MOTOR1_1, LOW); digitalWrite(MOTOR1_2, LOW);
+      digitalWrite(MOTOR2_1, LOW); digitalWrite(MOTOR2_2, LOW);
+    }
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.begin();
+}
+
+void loop() {}
+    </code></pre>
+
+    <h3>💻 HTML + CSS Interface Code:</h3>
+    <pre><code>
+&lt;div&gt;
+  &lt;button class="btn blue" onclick="move('forward')"&gt;Forward&lt;/button&gt;&lt;br&gt;
+  &lt;button class="btn blue" onclick="move('left')"&gt;Left&lt;/button&gt;
+  &lt;button class="btn red" onclick="move('stop')"&gt;Stop&lt;/button&gt;
+  &lt;button class="btn blue" onclick="move('right')"&gt;Right&lt;/button&gt;&lt;br&gt;
+  &lt;button class="btn blue" onclick="move('backward')"&gt;Backward&lt;/button&gt;&lt;br&gt;
+  &lt;button class="btn orange"&gt;Light ON&lt;/button&gt;
+  &lt;button class="btn orange"&gt;Light OFF&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  function move(direction) {
+    fetch("/move?dir=" + direction);
+  }
+&lt;/script&gt;
+    </code></pre>
+  </div>
+
+  <div class="back">
+    <a href="index.html" style="text-decoration: none; font-weight: bold;">⬅️ Back to Home</a>
+  </div>
+
+  <script>
+    function toggleCode() {
+      const codeBox = document.getElementById("codeBox");
+      codeBox.style.display = codeBox.style.display === "block" ? "none" : "block";
+    }
+  </script>
+</body>
+</html>

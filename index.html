@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IoT Project Interface Selector</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #2196f3;
+      padding: 10px 20px;
+      color: white;
+    }
+
+    .navbar .title {
+      margin: 0 auto;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown button {
+      background-color: #2196f3;
+      color: white;
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .description {
+      max-width: 800px;
+      margin: 40px auto 30px auto;
+      font-size: 18px;
+      color: #444;
+      line-height: 1.6;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .card-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto 60px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 220px;
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .card:hover {
+      background-color: #e0f7fa;
+      transform: scale(1.05);
+    }
+
+    .card a {
+      text-decoration: none;
+      color: black;
+      font-size: 18px;
+    }
+
+    .section-bottom {
+      background-color: #0d47a1;
+      color: white;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .bottom-box {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .bottom-box div {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .bottom-box h3 {
+      margin-bottom: 15px;
+      color: #ffeb3b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bottom-box p,
+    .bottom-box a,
+    .bottom-box label {
+      font-size: 16px;
+      color: #f1f1f1;
+      text-decoration: none;
+    }
+
+    .bottom-box a:hover {
+      text-decoration: underline;
+    }
+
+    .bottom-box form input,
+    .bottom-box form textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0 12px 0;
+      border: none;
+      border-radius: 4px;
+    }
+
+    .bottom-box form textarea {
+      resize: vertical;
+    }
+
+    .bottom-box form button {
+      background-color: #ffeb3b;
+      color: #0d47a1;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .bottom-box form button:hover {
+      background-color: #fdd835;
+    }
+
+    footer {
+      background-color: #0a2d5a;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+    }
+
+    @media (max-width: 768px) {
+      .navbar .title {
+        font-size: 18px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        padding: 20px;
+      }
+
+      .bottom-box {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    .icon-bounce {
+      display: inline-block;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <div></div>
+    <div class="title">IoT Control Hub</div>
+    <div class="dropdown">
+      <button>☰ Menu</button>
+      <div class="dropdown-content">
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Website Description -->
+  <div class="description">
+    <p>
+      Welcome to the IoT Control Hub! This interactive platform allows you to explore and control a variety of ESP32-based IoT systems through simple and intuitive web interfaces.
+      Each module demonstrates real-time control and monitoring of smart devices such as cars, drones, lights, door locks, temperature sensors, cameras, and more.
+      Click on any option below to get started with hands-on interaction and view the embedded ESP32-compatible code used for each system.
+    </p>
+  </div>
+
+  <h1>Select IoT Interface</h1>
+
+  <!-- Interface Cards -->
+  <div class="card-container">
+    <div class="card"><a href="./car.html">🚗 Car Control</a></div>
+    <div class="card"><a href="./drone.html">🛸 Drone Control</a></div>
+    <div class="card"><a href="./light.html">💡 Light Control</a></div>
+    <div class="card"><a href="./doorlock.html">🚪 Door Lock</a></div>
+    <div class="card"><a href="./temperature.html">🌡️ Temperature</a></div>
+    <div class="card"><a href="./camera.html">📷 Camera</a></div>
+    <div class="card"><a href="./aiface.html">🧠 AI Face Recog.</a></div>
+    <div class="card"><a href="./waterlevel.html">💧 Water Level</a></div>
+  </div>
+
+  <!-- About Us & Contact -->
+  <div class="section-bottom">
+    <div class="bottom-box">
+      <div id="about">
+        <h3><span class="icon-bounce">📘</span> About Us</h3>
+        <p>This website was created to offer a centralized platform where users can interact with various IoT systems through user-friendly web interfaces.</p>
+        <p>It solves the common challenge of demonstrating and accessing real-time IoT functionalities—such as automation, monitoring, and control—on a single interface, directly powered by ESP32 devices.</p>
+      </div>
+      <div id="contact">
+        <h3><span class="icon-bounce">✉️</span> Contact Me</h3>
+        <form>
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Your email" required>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" placeholder="Your message" required></textarea>
+
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 | Designed and edited by Surya BG
+  </footer>
+
+</body>
+</html>

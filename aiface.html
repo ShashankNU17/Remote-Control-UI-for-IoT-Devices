@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Face Recognition</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #ede7f6; padding-top: 30px; }
+    .btn { width: 180px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+    .blue { background-color: #90caf9; }
+    .red { background-color: #ef9a9a; }
+    .code-section { display: none; background: #fff; padding: 20px; margin-top: 20px; border: 1px solid #ccc; text-align: left; }
+    pre { background: #eee; padding: 10px; overflow-x: auto; white-space: pre-wrap; }
+    .back { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <h2>Face Recognition System</h2>
+  <button class="btn blue" onclick="sendCmd('start')">Start Detection</button>
+  <button class="btn red" onclick="sendCmd('stop')">Stop Detection</button>
+  <button class="btn blue" onclick="sendCmd('capture')">Capture Face</button>
+
+  <br><br>
+  <button onclick="toggleCode()" class="btn">Show Code</button>
+
+  <div id="codeBox" class="code-section">
+    <h3>ESP32 Template + HTML Code</h3>
+    <pre><code>
+// 🚀 ESP32 + AsyncWebServer Boilerplate (Face Control)
+
+#include &lt;WiFi.h&gt;
+#include &lt;ESPAsyncWebServer.h&gt;
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+
+AsyncWebServer server(80);
+
+const char* htmlPage = R"rawliteral(
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;&lt;head&gt;&lt;title&gt;Face Control&lt;/title&gt;
+&lt;style&gt;
+  .btn { width: 180px; height: 50px; margin: 10px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; }
+  .blue { background-color: #90caf9; }
+  .red { background-color: #ef9a9a; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h2&gt;Face Recognition System&lt;/h2&gt;
+  &lt;button class='btn blue' onclick="sendCmd('start')"&gt;Start Detection&lt;/button&gt;
+  &lt;button class='btn red' onclick="sendCmd('stop')"&gt;Stop Detection&lt;/button&gt;
+  &lt;button class='btn blue' onclick="sendCmd('capture')"&gt;Capture Face&lt;/button&gt;
+  &lt;script&gt;
+    function sendCmd(cmd) {
+      fetch('/face?cmd=' + cmd);
+    }
+  &lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting...");
+  }
+  Serial.println("WiFi Connected!");
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", htmlPage);
+  });
+
+  server.on("/face", HTTP_GET, [](AsyncWebServerRequest *request){
+    if (request->hasParam("cmd")) {
+      String cmd = request->getParam("cmd")->value();
+      if (cmd == "start") {
+        // Start face detection logic
+      } else if (cmd == "stop") {
+        // Stop face detection
+      } else if (cmd == "capture") {
+        // Capture face logic
+      }
+    }
+    request->send(200, "text/plain", "OK");
+  });
+
+  server.begin();
+}
+
+void loop() {}
+    </code></pre>
+  </div>
+
+  <div class="back">
+    <a href="index.html"><strong>⬅️ Back to Home</strong></a>
+  </div>
+
+  <script>
+    function toggleCode() {
+      const codeBox = document.getElementById("codeBox");
+      codeBox.style.display = codeBox.style.display === "block" ? "none" : "block";
+    }
+    function sendCmd(cmd) {
+      fetch('/face?cmd=' + cmd);
+    }
+  </script>
+
+</body>
+</html>
